@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDL Acrostic Poems</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            transition: background 0.8s ease;
+        }
+
+        body.nice-mode {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 15px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .mode-label {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .nice-mode .mode-label {
+            color: #8b4513;
+            text-shadow: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .toggle-switch.nice {
+            background: rgba(139, 69, 19, 0.3);
+            border-color: rgba(139, 69, 19, 0.4);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 19px;
+            height: 19px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.nice .toggle-slider {
+            transform: translateX(25px);
+            background: #8b4513;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 90vw;
+        }
+
+        .title {
+            font-size: clamp(8rem, 20vw, 15rem);
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            user-select: none;
+            transition: all 0.8s ease;
+        }
+
+        .nice-mode .title {
+            color: #8b4513;
+            text-shadow: 0 3px 10px rgba(139, 69, 19, 0.3);
+        }
+
+        .letter {
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.8s ease;
+            margin: 0 0.1em;
+        }
+
+        .letter:hover:not(.poem-mode) {
+            transform: scale(1.1);
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .nice-mode .letter:hover:not(.poem-mode) {
+            color: #ff6b6b;
+            text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+        }
+
+        .poem-mode .title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            margin-bottom: 1rem;
+        }
+
+        .poem-mode .letter {
+            display: block;
+            text-align: left;
+            margin: 1rem 0;
+            font-size: clamp(3rem, 8vw, 6rem);
+            line-height: 1.2;
+            cursor: default;
+        }
+
+        .poem-word {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin-left: 1rem;
+            color: #ffd700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideIn 0.6s ease forwards;
+        }
+
+        .nice-mode .poem-word {
+            color: #ff6b6b;
+            text-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .poem-word {
+                font-size: clamp(1.2rem, 3vw, 2rem);
+            }
+            
+            .mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+            }
+            
+            .mode-label {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mode-toggle">
+        <span class="mode-label">Wacky</span>
+        <div class="toggle-switch" id="modeToggle">
+            <div class="toggle-slider"></div>
+        </div>
+        <span class="mode-label">Nice</span>
+    </div>
+
+    <div class="container">
+        <div id="title" class="title">
+            <span class="letter" data-letter="G" data-position="0">G</span>
+            <span class="letter" data-letter="D" data-position="1">D</span>
+            <span class="letter" data-letter="L" data-position="2">L</span>
+        </div>
+    </div>
+
+    <script>
+        // Word banks for each mode
+        const wordBanks = {
+            wacky: {
+                G: [
+                    'Gassy', 'Goopy', 'Grimy', 'Gross', 'Gooey', 'Gunky', 'Grungy', 'Grotesque', 'Germy', 'Ghastly',
+                    'Garlicky', 'Gaggy', 'Greasy', 'Gnarly', 'Gloppy', 'Gritty', 'Grubby', 'Gurgling', 'Giggling', 'Gobbling',
+                    'Gargling', 'Gasping', 'Guffawing', 'Gulping', 'Grumbling', 'Groaning', 'Growling', 'Gigantic-fart', 'Goofy', 'Goofball'
+                ],
+                D: [
+                    'Dank', 'Disgusting', 'Dripping', 'Drippy', 'Dingy', 'Dirty', 'Dooky', 'Damp', 'Dreadful', 'Deplorable',
+                    'Diarrhea', 'Dreary', 'Drab', 'Droopy', 'Drooling', 'Dorky', 'Dopey', 'Demented', 'Delirious', 'Deranged',
+                    'Disheveled', 'Dizzy', 'Dazed', 'Dumbfounded', 'Dunce-like', 'Dweeby', 'Dysfunctional', 'Dank-smelling', 'Dusty', 'Dull-witted'
+                ],
+                L: [
+                    'Lumpy', 'Loopy', 'Lame', 'Lousy', 'Leaky', 'Limp', 'Laggy', 'Lazy', 'Loony', 'Lopsided',
+                    'Lurking', 'Lunatic', 'Laughable', 'Ludicrous', 'Lumbering', 'Lackluster', 'Lanky', 'Lethargic', 'Lifeless', 'Listless',
+                    'Loathsome', 'Lopsided', 'Lukewarm', 'Lumpy-bumpy', 'Lunging', 'Lurching', 'Licking', 'Limping', 'Lingering', 'Loose-screwed'
+                ]
+            },
+            nice: {
+                G: [
+                    'Graceful', 'Glorious', 'Gentle', 'Generous', 'Genuine', 'Golden', 'Great', 'Green', 'Growing', 'Grateful',
+                    'Gleaming', 'Gorgeous', 'Groovy', 'Gigantic', 'Gallant', 'Gifted', 'Glowing', 'Gradual', 'Grand', 'Grounded',
+                    'Gathering', 'Guiding', 'Guarding', 'Glittering', 'Gracious', 'Glistening', 'Grinning', 'Gliding', 'Gleeful', 'Galloping'
+                ],
+                D: [
+                    'Dazzling', 'Dancing', 'Dynamic', 'Delightful', 'Dreaming', 'Determined', 'Diverse', 'Devoted', 'Daring', 'Dignified',
+                    'Durable', 'Dramatic', 'Dainty', 'Decorated', 'Deep', 'Detailed', 'Diligent', 'Direct', 'Distinctive', 'Dependable',
+                    'Delicate', 'Dedicated', 'Desirable', 'Diplomatic', 'Disciplined', 'Discerning', 'Dominant', 'Doubtless', 'Driven', 'Darling'
+                ],
+                L: [
+                    'Luminous', 'Lovely', 'Lively', 'Lasting', 'Laughing', 'Leading', 'Limitless', 'Loyal', 'Lucky', 'Luxurious',
+                    'Liberal', 'Logical', 'Lyrical', 'Legendary', 'Learned', 'Lighthearted', 'Likeable', 'Lush', 'Lucid', 'Loving',
+                    'Liberating', 'Laudable', 'Lavish', 'Lean', 'Legitimate', 'Leisurely', 'Lenient', 'Levelheaded', 'Lifelong', 'Luminescent'
+                ]
+            }
+        };
+
+        let currentPoem = null;
+        let isPoetryMode = false;
+        let currentMode = 'wacky'; // Default to wacky mode
+
+        function getRandomWord(letter) {
+            const words = wordBanks[currentMode][letter];
+            return words[Math.floor(Math.random() * words.length)];
+        }
+
+        function generatePoem(clickedLetter) {
+            const letters = ['G', 'D', 'L'];
+            const poemOrder = [clickedLetter, ...letters.filter(l => l !== clickedLetter)];
+            
+            return poemOrder.map(letter => ({
+                letter: letter,
+                word: getRandomWord(letter)
+            }));
+        }
+
+        function animateToPoetry(poem) {
+            const container = document.querySelector('.container');
+            const letters = document.querySelectorAll('.letter');
+            
+            container.classList.add('poem-mode');
+            isPoetryMode = true;
+            
+            // Rearrange and animate letters
+            letters.forEach((letterEl, index) => {
+                const letterData = poem[index];
+                letterEl.textContent = letterData.letter;
+                letterEl.style.animationDelay = `${index * 0.3}s`;
+                
+                // Add word after a delay
+                setTimeout(() => {
+                    const wordSpan = document.createElement('span');
+                    wordSpan.className = 'poem-word';
+                    wordSpan.textContent = ' - ' + letterData.word;
+                    wordSpan.style.animationDelay = `${index * 0.2}s`;
+                    letterEl.appendChild(wordSpan);
+                }, 500 + (index * 300));
+            });
+        }
+
+        function resetToOriginal() {
+            const container = document.querySelector('.container');
+            const letters = document.querySelectorAll('.letter');
+            
+            container.classList.remove('poem-mode');
+            isPoetryMode = false;
+            
+            // Reset letters to original state
+            letters.forEach((letterEl, index) => {
+                const originalLetter = ['G', 'D', 'L'][index];
+                letterEl.textContent = originalLetter;
+                letterEl.style.animationDelay = '';
+                
+                // Remove any word spans
+                const wordSpans = letterEl.querySelectorAll('.poem-word');
+                wordSpans.forEach(span => span.remove());
+            });
+            
+            currentPoem = null;
+        }
+
+        function toggleMode() {
+            const body = document.body;
+            const toggle = document.getElementById('modeToggle');
+            
+            if (currentMode === 'wacky') {
+                currentMode = 'nice';
+                body.classList.add('nice-mode');
+                toggle.classList.add('nice');
+            } else {
+                currentMode = 'wacky';
+                body.classList.remove('nice-mode');
+                toggle.classList.remove('nice');
+            }
+            
+            // If currently showing a poem, reset and show new one with current mode
+            if (isPoetryMode && currentPoem) {
+                const startingLetter = currentPoem[0].letter;
+                resetToOriginal();
+                setTimeout(() => {
+                    currentPoem = generatePoem(startingLetter);
+                    animateToPoetry(currentPoem);
+                }, 100);
+            }
+        }
+
+        // Event listeners
+        document.querySelectorAll('.letter').forEach(letter => {
+            letter.addEventListener('click', function(e) {
+                if (isPoetryMode) return;
+                
+                e.stopPropagation(); // Prevent the document click from firing
+                const clickedLetter = this.dataset.letter;
+                currentPoem = generatePoem(clickedLetter);
+                animateToPoetry(currentPoem);
+            });
+        });
+
+        // Click anywhere to reset when in poetry mode
+        document.addEventListener('click', function(e) {
+            if (isPoetryMode && !e.target.closest('.mode-toggle')) {
+                resetToOriginal();
+            }
+        });
+
+        // Mode toggle functionality
+        document.getElementById('modeToggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMode();
+        });
+    </script>
+</body>
+</html> 
