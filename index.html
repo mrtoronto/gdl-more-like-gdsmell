@@ -37,6 +37,35 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
+        .apology-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .apology-button {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .apology-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #ff8e8e, #fed786);
+        }
+
         .mode-label {
             color: white;
             font-size: 0.9rem;
@@ -172,9 +201,38 @@
                 font-size: 0.8rem;
             }
         }
+
+        .bottom-link {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 500;
+        }
+
+        .bottom-link a {
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-style: italic;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-link a:hover {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .nice-mode .bottom-link a {
+            color: rgba(139, 69, 19, 0.4);
+        }
+
+        .nice-mode .bottom-link a:hover {
+            color: rgba(139, 69, 19, 0.7);
+        }
     </style>
 </head>
 <body>
+
     <div class="mode-toggle">
         <span class="mode-label">Wacky</span>
         <div class="toggle-switch" id="modeToggle">
@@ -188,6 +246,10 @@
             <span class="letter" data-letter="G" data-position="0">G</span>
             <span class="letter" data-letter="D" data-position="1">D</span>
             <span class="letter" data-letter="L" data-position="2">L</span>
+        </div>
+        
+        <div class="bottom-link">
+            <a href="sorry.html">sorry about the wacky mode</a>
         </div>
     </div>
 
